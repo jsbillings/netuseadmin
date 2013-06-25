@@ -1,0 +1,109 @@
+#!/usr/bin/python
+
+import socket, time
+
+server = 'srvr41.engin.umich.edu'
+port = 1680
+down_interval = 900
+
+def Help():
+    print '\n--------------------------------------------------------------------------------\nCommands:\n\nadd       <hostname> <vendor> <model> L|P  Add a new host to the database\ndelete    <hostname>                       Delete a host from the database\nlocation  <hostname> [<room>] <building>   Set the location for a host\nlist      [<vendor>] [L|P]                 List hosts\n\nreload                                     Load hosts from NETUSE hostfile\nsavestate                                  Store host list in NETUSE hostfile\nuse       <filename>                       Read commands from a file\n\n?, help                                    Display this help text\nexit, quit                                 Exit the program'
+    print 'All commands and arguments EXCEPT hostnames are case-insensitive.'
+    print '-' * 80
+    print
+
+
+def request(req):
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.connect ((server, port))
+    sock.sendall(req)
+    data = sock.recv(50000)
+    while 1:
+        buff = sock.recv(50000)
+        if len(buff):
+            data = data + buff
+        else:
+            break
+    sock.close()
+    return data
+
+def dataprint(data, hostprint):
+    if hostprint & (not data.startswith('Invalid')):
+        print '\nHost name             Type and Model       Location               Class   Status'
+        print '--------------------  -------------------  --------------------  -------  ------'
+        for d in data.splitlines(False):
+            d = d.split(':')
+            if len(d) < 15:
+                pass
+            else:
+                if d[11] == 'L':
+                    d[11] = 'Lab'
+                else:
+                    d[11] = 'Private'
+                if float(d[14]) > (time.time() - down_interval):
+                        d[14] = 'Up'
+                else:
+                    d[14] = 'Down'
+                print '%-20.20s  %-5s%-14s  %-20.20s  %7s %6s' % (d[0], d[1], d[2], d[12], d[11], d[14])
+        print
+    else:
+        print '\n%s' % data
+
+def use(filename):
+    print filename
+
+def execute(command):
+    cmdar = command.split()
+    lst = False
+    data = ''
+    if len(cmdar):
+        if (cmdar[0].upper() == 'EXIT') | (cmdar[0].upper() == 'QUIT'):
+            return True
+        elif (cmdar[0].upper() == 'HELP') | (cmdar[0] == '?'):
+            Help()
+        elif cmdar[0].upper() == 'ADD':
+            del cmdar[0]
+            command = 'NUADMIN ADD ' + ' '.join(cmdar)
+            data = request(command)
+        elif cmdar[0].upper() == 'LIST':
+            lst = True
+            del cmdar[0]
+            command = 'NUADMIN LST ' + ' '.join(cmdar)
+            data = request(command)
+        elif cmdar[0].upper() == 'DELETE':
+            del cmdar[0]
+            command = 'NUADMIN DEL ' + ' '.join(cmdar)
+            data = request(command)
+        elif cmdar[0].upper() == 'LOCATION':
+            del cmdar[0]
+            command = 'NUADMIN LOC ' + ' '.join(cmdar)
+            data = request(command)
+        elif cmdar[0].upper() == 'RELOAD':
+            del cmdar[0]
+            command = 'NUADMIN REL ' + ' '.join(cmdar)
+            data = request(command)
+        elif cmdar[0].upper() == 'SAVESTATE':
+            del cmdar[0]
+            command = 'NUADMIN SAV ' + ' '.join(cmdar)
+            data = request(command)
+        elif cmdar[0].upper() == 'USE':
+            if len(cmdar) == 2:
+                use(cmdar[1])
+            else:
+                print '\nInvalid number of arguments.\n'
+        else:
+            print '\nInvalid command. Type \'?\' or \'help\' to receive a list of valid commands.\n'
+        if len(data):
+            dataprint(data, lst)
+    return False
+        
+
+print '=' * 80
+print 'Netuse Administration Command Line Interface'
+print '=' * 80
+print
+
+done = False
+while not done:
+    command = raw_input('NUADMIN> ')
+    done = execute(command)
