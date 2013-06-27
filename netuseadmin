@@ -13,22 +13,18 @@
 #
 ################################################################################
 # Import modules, set server characteristics, and define machine class
-import socket, time
-
-server = 'srvr41.engin.umich.edu'
+import socket, time, optparse
+#################################### Changed server for test environment
+server = 'srvr41.engin.umich.edu' ## instead 'netuse.engin.umich.edu' should be
+#################################### used
 port = 1680
 down_interval = 900
 
 class machine(object):
     def __init__(self,field):
         field = field + ' : : : : : : : : : : : : : : : :'
-        print field
         field = field.split(':')
         self.host = field[0]
-        if field[1] == 'LINU':
-            field[1] = 'LINUX'
-        elif field[1] == 'XP':
-            field[1] = 'WIN'
         self.plat = field[1]
         self.disp = field[9]
         try: 
@@ -139,7 +135,38 @@ def use(filename):
         if done:
             break
     handle.close()
-        
+################################################################################
+# ListCommand function
+def listcommand(arguments):
+    p = optparse.OptionParser(usage='Usage: list [<vendor>] [L|P] [options]')
+    p.add_option('-m', '--model', action='store', default='',
+                 help='List only machines matching MODEL')
+    p.add_option('-t', '--type', action='store', type='string',
+                 default='', help='List only machines matching TYPE')
+    try:
+        options, arguments = p.parse_args(arguments.split())
+    except SystemExit:
+        return False, ''
+    data = request('NUADMIN LST ' + ' '.join(arguments))
+    data = data.replace('XP','WIN')
+    data = data.replace('LINU', 'LINUX')
+    newdata = []
+    if options.model:
+        for d in data.splitlines(False):
+            if d.split(':')[2].upper().find(options.model.upper()) > -1:
+                newdata = newdata + [d]
+        data = '\n'.join(newdata)
+    newdata = []
+    if options.type:
+        for d in data.splitlines(False):
+            if d.split(':')[1].upper().find(options.type.upper()) > -1:
+                newdata = newdata + [d]
+        data = '\n'.join(newdata)
+    return True, data
+
+
+
+
 ################################################################################
 # Execute function
 #
@@ -170,10 +197,7 @@ def execute(command):
             command = 'NUADMIN ADD ' + ' '.join(cmdar)
             data = request(command)
         elif cmdar[0].upper() == 'LIST':
-            lst = True
-            del cmdar[0]
-            command = 'NUADMIN LST ' + ' '.join(cmdar)
-            data = request(command)
+            lst, data = listcommand(' '.join(cmdar[1:]))
         elif cmdar[0].upper() == 'DELETE':
             del cmdar[0]
             command = 'NUADMIN DEL ' + ' '.join(cmdar)
