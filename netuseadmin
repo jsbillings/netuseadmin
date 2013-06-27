@@ -50,7 +50,17 @@ def dataprint(data, hostprint):
         print '\n%s' % data
 
 def use(filename):
-    print filename
+    try: handle = open(filename, mode='r')
+    except IOError, err:
+        print '\nError opening %r for input. Command aborted.\n' % err.filename
+        return
+    for line in handle:
+        print 'Executing: %s' % line.strip('\n')
+        done = execute(line)
+        if done:
+            break
+    handle.close()
+        
 
 def execute(command):
     cmdar = command.split()
