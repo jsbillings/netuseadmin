@@ -1,0 +1,48 @@
+.TH NETUSEADMIN 8 "June 2013" "Version 2.0"
+
+.SH NAME
+netuseadmin - Netuse Administration Command Line Interface
+
+.SH SYNOPSIS
+.B	netuseadmin
+
+.SH DESCRIPTION
+.B	netuseadmin
+opens a command line interface to perform administration operations on the 
+Netuse Server. In order to perform commands the host must be pre-authenticated
+
+.SH COMMANDS 
+Netuse Administration commands to be used in the command line interface:
+.TP
+.BR	add " <hostname> <vendor> <model> L|P"
+Add a new host to the database
+.TP
+.BR	delete " <hostname>"
+Delete a host from the database
+.TP
+.BR	location " <hostname> [room] <building>"
+Set the location for a host
+.TP
+.BR	list " [<vendor>] [L|P]"
+List hosts
+.TP
+.B	reload
+Load hosts from NETUSE hostfile
+.TP
+.B	savestate
+Store host list in NETUSE hostfile
+.TP
+.BR	use " <filename>"
+Read commands from a file
+.TP
+.BR	? ", " help
+Display help text
+.TP
+.BR	exit ", " quit
+Exit the program
+
+.SH AUTHOR
+Christopher W. Heyer (cwheyer@umich.edu)
+
+.SH SEE ALSO
+.BR	hostinfo (8)

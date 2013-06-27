@@ -12,12 +12,43 @@
 #      6/27/13 cwheyer:  Rewrote and updated in python
 #
 ################################################################################
-# Import modules and set server characteristics
+# Import modules, set server characteristics, and define machine class
 import socket, time
 
 server = 'srvr41.engin.umich.edu'
 port = 1680
 down_interval = 900
+
+class machine(object):
+    def __init__(self,field):
+        field = field + ' : : : : : : : : : : : : : : : :'
+        print field
+        field = field.split(':')
+        self.host = field[0]
+        if field[1] == 'LINU':
+            field[1] = 'LINUX'
+        elif field[1] == 'XP':
+            field[1] = 'WIN'
+        self.plat = field[1]
+        self.disp = field[9]
+        try: 
+            self.time = float(field[14])
+        except ValueError:
+            self.time = 0
+        if self.time > (time.time() - down_interval):
+            self.status = 'Up'
+        else:
+            self.status = 'Down'
+        self.loc = field[12]
+        self.model = field[2]
+        self.ipadd = field[15]
+        if field[11] == 'L':
+            field[11] = 'Lab'
+        elif field[11] == 'P':
+            field[11] = 'Private'
+        else:
+            field[11] = 'Unknown'
+        self.ctype = field[11]
 
 ################################################################################
 # Help function
@@ -73,25 +104,13 @@ def request(req):
 ###############################################################################
 def dataprint(data, hostprint):
     if hostprint & (not data.startswith('Invalid')):
-        print '\nHost name             Type and Model       Location               Class   Status'
-        print '--------------------  -------------------  --------------------  -------  ------'
+        print '\nHost name            Type and Model       Location               Class   Status'
+        print '-------------------- -------------------  --------------------  -------  ------'
+        machines = []
         for d in data.splitlines(False):
-            d = d + '::::::::::::::::::::::::::' # add buffer of empty strings
-            d = d.split(':')
-            if d[11] == 'L':
-                d[11] = 'Lab'
-            elif d[11] == 'P':
-                d[11] = 'Private'
-            else:
-                d[11] = 'Unknown'
-            try:
-                if float(d[14]) > (time.time() - down_interval):
-                    d[14] = 'Up'
-                else:
-                    d[14] = 'Down'
-            except ValueError, err:
-                d[14] = 'Down'
-            print '%-20.20s  %-5s%-14s  %-20.20s  %7s %6s' % (d[0], d[1], d[2], d[12], d[11], d[14])
+            machines = machines + [machine(d)]
+        for m in machines:
+            print '%-20.20s %-6s%-14s  %-20.20s  %7s %6s' % (m.host, m.plat, m.model, m.loc, m.ctype, m.status)
         print
     else:
         print '\n%s' % data
