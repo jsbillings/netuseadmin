@@ -33,7 +33,7 @@
 ## to incidental, indirect, consequential, or special damages.
 ################################################################################
  
-push(@INC, "/afs/umich.edu/user/c/w/cwheyer/caen_CWH/netusepl");
+push(@INC, "/usr/caen/netuse/lib");
 require "netuse_client.pl";
 
  
