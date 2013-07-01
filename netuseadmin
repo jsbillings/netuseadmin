@@ -90,7 +90,7 @@ def request(req):
     except:
         print '\nError: Authenticated Host Required'
         print 'Exiting Netuse Administration Command Line Interface'
-        print '=' * 160
+        print '=' * 80
         raise SystemExit
 
 ################################################################################
@@ -167,6 +167,8 @@ def listcommand(arguments):
                  help='List only machines matching LOCATION')
     p.add_option('-m', '--model', action='store', default='', type='string',
                  help='List only machines matching MODEL')
+    p.add_option('-s', '--search', action='store', default='', type='string',
+                 help='Search for models matching SEARCH in any catagory')
     p.add_option('-t', '--type', action='store', type='string',
                  default='', help='List only machines matching TYPE')
     try:
@@ -179,28 +181,47 @@ def listcommand(arguments):
     newdata = []
     if options.model:
         for d in data.splitlines(False):
-            if d.split(':')[2].upper().find(options.model.upper()) > -1:
-                newdata = newdata + [d]
+            try: 
+                if d.split(':')[2].upper().find(options.model.upper()) > -1:
+                    newdata = newdata + [d]
+            except IndexError:
+                pass
         data = '\n'.join(newdata)
     del newdata
     newdata = []
     if options.type:
         for d in data.splitlines(False):
-            if d.split(':')[1].upper().find(options.type.upper()) > -1:
-                newdata = newdata + [d]
+            try:
+                if d.split(':')[1].upper().find(options.type.upper()) > -1:
+                    newdata = newdata + [d]
+            except IndexError:
+                pass
         data = '\n'.join(newdata)
     del newdata
     newdata = []
     if options.host:
         for d in data.splitlines(False):
-            if d.split(':')[0].upper().find(options.host.upper()) > -1:
-                newdata = newdata + [d]
+            try:
+                if d.split(':')[0].upper().find(options.host.upper()) > -1:
+                    newdata = newdata + [d]
+            except IndexError:
+                pass
         data = '\n'.join(newdata)
     del newdata
     newdata = []
     if options.location:
+        try:
+            for d in data.splitlines(False):
+                if d.split(':')[12].upper().find(options.location.upper()) > -1:
+                    newdata = newdata + [d]
+        except IndexError:
+            pass
+        data = '\n'.join(newdata)
+    del newdata
+    newdata = []
+    if options.search:
         for d in data.splitlines(False):
-            if d.split(':')[12].upper().find(options.location.upper()) > -1:
+            if d.upper().find(options.search.upper()) > -1:
                 newdata = newdata + [d]
         data = '\n'.join(newdata)
     del newdata
@@ -231,7 +252,7 @@ def execute(command):
     data = ''
     if len(cmdar):
         if (cmdar[0].upper() == 'EXIT') | (cmdar[0].upper() == 'QUIT'):
-            print '=' * 160
+            print '=' * 80
             return True
         elif (cmdar[0].upper() == 'HELP') | (cmdar[0] == '?'):
             Help()
