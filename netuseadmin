@@ -13,7 +13,7 @@
 #
 ################################################################################
 # Import modules, set server characteristics, and define machine class
-import socket, time, optparse
+import socket, time, optparse, readline
 #################################### Changed server for test environment
 server = 'srvr41.engin.umich.edu' ## instead 'netuse.engin.umich.edu' should be
 #################################### used
