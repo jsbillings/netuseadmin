@@ -55,7 +55,7 @@ class machine(object):
 #
 ################################################################################
 def Help():
-    print '\n--------------------------------------------------------------------------------\nCommands:\n\nadd       <hostname> <vendor> <model> L|P  Add a new host to the database\ndelete    <hostname>                       Delete a host from the database\nlocation  <hostname> [<room>] <building>   Set the location for a host\nlist      [<vendor>] [L|P]                 List hosts\n\nreload                                     Load hosts from NETUSE hostfile\nsavestate                                  Store host list in NETUSE hostfile\nuse       <filename>                       Read commands from a file\n\n?, help                                    Display this help text\nexit, quit                                 Exit the program'
+    print '\n--------------------------------------------------------------------------------\nCommands:\n\nadd       <hostname> <vendor> <model> L|P  Add a new host to the database\ndelete    <hostname>                       Delete a host from the database\nlocation  <hostname> [<room>] <building>   Set the location for a host\nlist      [<vendor>] [L|P] [options]       List hosts\n\nreload                                     Load hosts from NETUSE hostfile\nsavestate                                  Store host list in NETUSE hostfile\nuse       <filename>                       Read commands from a file\n\n?, help                                    Display this help text\nexit, quit                                 Exit the program'
     print 'All commands and arguments EXCEPT hostnames are case-insensitive.'
     print '-' * 80
     print
@@ -74,19 +74,22 @@ def Help():
 #
 ################################################################################
 def request(req):
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.connect ((server, port))
-    sock.sendall(req)
-    data = sock.recv(50000)
-    while 1:
-        buff = sock.recv(50000)
-        if len(buff):
-            data = data + buff
-        else:
-            break
-    sock.close()
-    return data
-
+    try: 
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.connect ((server, port))
+        sock.sendall(req)
+        data = sock.recv(50000)
+        while 1:
+            buff = sock.recv(50000)
+            if len(buff):
+                data = data + buff
+            else:
+                break
+        sock.close()
+        return data
+    except sock.error:
+        print '\nError: Authenticated Host Required'
+        print 'Exiting Netuse Administration Command Line Interface'
 ################################################################################
 # Dataprint fucntion
 # 
