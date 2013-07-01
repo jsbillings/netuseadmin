@@ -142,7 +142,11 @@ def use(filename):
 # ListCommand function
 def listcommand(arguments):
     p = optparse.OptionParser(usage='Usage: list [<vendor>] [L|P] [options]')
-    p.add_option('-m', '--model', action='store', default='',
+    p.add_option('--host', action='store', default='', type='string',
+                 help='List only machines matching HOST')
+    p.add_option('-l', '--location', action='store', default='', type='string',
+                 help='List only machines matching LOCATION')
+    p.add_option('-m', '--model', action='store', default='', type='string',
                  help='List only machines matching MODEL')
     p.add_option('-t', '--type', action='store', type='string',
                  default='', help='List only machines matching TYPE')
@@ -159,12 +163,28 @@ def listcommand(arguments):
             if d.split(':')[2].upper().find(options.model.upper()) > -1:
                 newdata = newdata + [d]
         data = '\n'.join(newdata)
+    del newdata
     newdata = []
     if options.type:
         for d in data.splitlines(False):
             if d.split(':')[1].upper().find(options.type.upper()) > -1:
                 newdata = newdata + [d]
         data = '\n'.join(newdata)
+    del newdata
+    newdata = []
+    if options.host:
+        for d in data.splitlines(False):
+            if d.split(':')[0].upper().find(options.host.upper()) > -1:
+                newdata = newdata + [d]
+        data = '\n'.join(newdata)
+    del newdata
+    newdata = []
+    if options.location:
+        for d in data.splitlines(False):
+            if d.split(':')[12].upper().find(options.location.upper()) > -1:
+                newdata = newdata + [d]
+        data = '\n'.join(newdata)
+    del newdata
     return True, data
 
 
