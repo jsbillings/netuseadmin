@@ -217,7 +217,7 @@ def execute(command):
             Help()
         elif cmdar[0].upper() == 'ADD':
             del cmdar[0]
-            command = 'NUADMIN ADD ' + ' '.join(cmdar)
+            command = 'NUADMIN ADD %s' % ' '.join(cmdar)
             data = request(command)
         elif cmdar[0].upper() == 'LIST':
             lst, data = listcommand(' '.join(cmdar[1:]))

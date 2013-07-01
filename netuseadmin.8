@@ -23,10 +23,10 @@ Delete a host from the database
 .BR	location " <hostname> [room] <building>"
 Set the location for a host
 .TP
-.BR	list " [<vendor>] [L|P] [-m MODEL] [--model=MODEL] [-t TYPE] [--type=TYPE]"
-List hosts. [<vendor>] and [L|P] arguments request machines that match the vendor or class designations respectively. If either the --model flag or --type flag is invoked,
-.B	list 
-only prints machines that match the give model or type name.
+.BR	list " [<vendor>] [L|P] [options]"
+List hosts. [<vendor>] and [L|P] arguments request machines that match the vendor or class designations respectively. Use:
+.B	list -h
+to view available options
 .TP
 .B	reload
 Load hosts from NETUSE hostfile
