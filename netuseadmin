@@ -87,9 +87,12 @@ def request(req):
                 break
         sock.close()
         return data
-    except sock.error:
+    except:
         print '\nError: Authenticated Host Required'
         print 'Exiting Netuse Administration Command Line Interface'
+        print '=' * 160
+        raise SystemExit
+
 ################################################################################
 # Dataprint fucntion
 # 
@@ -140,6 +143,22 @@ def use(filename):
     handle.close()
 ################################################################################
 # ListCommand function
+#
+# Usage:       printhosts, data = listcommand(arguments)
+#
+# Purpose:     To perform the list command. It parses the options and arguments
+#              passed to it and filters the results of the list command to match
+#              the arguments passsed to it.
+#
+# Arguments:   Command line arguments and options for the list command
+#
+# Returns:     Boolean true and host data if data is received successfully from 
+#              the netuse server. Boolean false and an empty string if the
+#              request did not return any results
+#
+# Calls:       request()
+#
+################################################################################
 def listcommand(arguments):
     p = optparse.OptionParser(usage='Usage: list [<vendor>] [L|P] [options]')
     p.add_option('--host', action='store', default='', type='string',
@@ -212,6 +231,7 @@ def execute(command):
     data = ''
     if len(cmdar):
         if (cmdar[0].upper() == 'EXIT') | (cmdar[0].upper() == 'QUIT'):
+            print '=' * 160
             return True
         elif (cmdar[0].upper() == 'HELP') | (cmdar[0] == '?'):
             Help()
