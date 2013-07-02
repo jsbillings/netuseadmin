@@ -14,9 +14,8 @@
 ################################################################################
 # Import modules, set server characteristics, and define machine class
 import socket, time, optparse, readline
-#################################### Changed server for test environment
-server = 'srvr41.engin.umich.edu' ## instead 'netuse.engin.umich.edu' should be
-#################################### used
+
+server = 'netuse.engin.umich.edu'
 port = 1680
 down_interval = 900
 
@@ -55,7 +54,22 @@ class machine(object):
 #
 ################################################################################
 def Help():
-    print '\n--------------------------------------------------------------------------------\nCommands:\n\nadd       <hostname> <vendor> <model> L|P  Add a new host to the database\ndelete    <hostname>                       Delete a host from the database\nlocation  <hostname> [<room>] <building>   Set the location for a host\nlist      [<vendor>] [L|P] [options]       List hosts\n\nreload                                     Load hosts from NETUSE hostfile\nsavestate                                  Store host list in NETUSE hostfile\nuse       <filename>                       Read commands from a file\n\n?, help                                    Display this help text\nexit, quit                                 Exit the program'
+    print """
+\n--------------------------------------------------------------------------------
+Commands:
+
+add       <hostname> <vendor> <model> L|P  Add a new host to the database
+delete    <hostname>                       Delete a host from the database
+location  <hostname> [<room>] <building>   Set the location for a host
+list      [<vendor>] [L|P] [options]       List hosts
+
+reload                                     Load hosts from NETUSE hostfile
+savestate                                  Store host list in NETUSE hostfile
+use       <filename>                       Read commands from a file
+
+?, help                                    Display this help text
+exit, quit                                 Exit the program
+"""
     print 'All commands and arguments EXCEPT hostnames are case-insensitive.'
     print '-' * 80
     print
@@ -88,7 +102,7 @@ def request(req):
         sock.close()
         return data
     except:
-        print '\nError: Authenticated Host Required'
+        print '\nError: Invalid administrative host -- Administrative access denied.'
         print 'Exiting Netuse Administration Command Line Interface'
         print '=' * 80
         raise SystemExit
